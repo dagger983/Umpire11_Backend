@@ -1,0 +1,24 @@
+{
+  "name": "umpire11_backend",
+  "version": "1.0.0",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.14.0",
+    "node": "^23.11.0",
+    "razorpay": "^2.9.6",
+    "util": "^0.12.5"
+  },
+  "keywords": [],
+  "description": ""
+}
