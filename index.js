@@ -244,12 +244,26 @@ app.delete('/contests/:id', (req, res) => {
   });
 });
 
+// Create - Add new joined contest
 app.post('/joined_contests', (req, res) => {
-  const { contest_title, entry_fee, username, mobile, contest_time, joined_at } = req.body;
-  const sql = 'INSERT INTO joined_contests (contest_title, entry_fee, username, mobile, contest_time, joined_at) VALUES (?, ?, ?, ?, ?, ?)';
-  db.query(sql, [contest_title, entry_fee, username, mobile, contest_time, joined_at], (err, result) => {
+  const { contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at } = req.body;
+  const sql = 'INSERT INTO joined_contests (contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  db.query(sql, [contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at], (err, result) => {
     if (err) return res.status(500).send(err);
     res.send({ id: result.insertId, message: 'Contest joined successfully' });
+  });
+});
+
+// Update - Update a contest entry
+app.put('/joined_contests/:id', (req, res) => {
+  const { contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at } = req.body;
+  const sql = `
+    UPDATE joined_contests 
+    SET contest_title=?, entry_fee=?, username=?, mobile=?, paymentId=?, contest_time=?, joined_at=? 
+    WHERE id=?`;
+  db.query(sql, [contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at, req.params.id], (err) => {
+    if (err) return res.status(500).send(err);
+    res.send({ message: 'Contest updated successfully' });
   });
 });
 
@@ -269,15 +283,7 @@ app.get('/joined_contests/:id', (req, res) => {
   });
 });
 
-// Update - Update a contest entry
-app.put('/joined_contests/:id', (req, res) => {
-  const { contest_title, entry_fee, username, mobile, contest_time, joined_at } = req.body;
-  const sql = `UPDATE joined_contests SET contest_title=?, entry_fee=?, username=?, mobile=?, contest_time=?, joined_at=? WHERE id=?`;
-  db.query(sql, [contest_title, entry_fee, username, mobile, contest_time, joined_at, req.params.id], (err) => {
-    if (err) return res.status(500).send(err);
-    res.send({ message: 'Contest updated successfully' });
-  });
-});
+
 
 // Delete - Delete a contest entry
 app.delete('/joined_contests/:id', (req, res) => {
