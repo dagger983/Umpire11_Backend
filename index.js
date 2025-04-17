@@ -203,10 +203,10 @@ app.delete("/featured-matches/:id", (req, res) => {
 });
 
 app.post('/contests', (req, res) => {
-  const { title, time, prize_pool, entry_fee, spot_entry, spot_left } = req.body;
-  const sql = `INSERT INTO contest (title, time, prize_pool, entry_fee, spot_entry, spot_left)
-               VALUES (?, ?, ?, ?, ?, ?)`;
-  db.query(sql, [title, time, prize_pool, entry_fee, spot_entry, spot_left], (err, result) => {
+  const { title, time, prize_pool, entry_fee, spot_entry, spot_left, category } = req.body;
+  const sql = `INSERT INTO contest (title, time, prize_pool, entry_fee, spot_entry, spot_left, category)
+               VALUES (?, ?, ?, ?, ?, ?, ?)`;
+  db.query(sql, [title, time, prize_pool, entry_fee, spot_entry, spot_left, category], (err, result) => {
     if (err) return res.status(500).send(err);
     res.status(201).send({ id: result.insertId, ...req.body });
   });
@@ -227,11 +227,10 @@ app.get('/contests/:id', (req, res) => {
   });
 });
 
-
 app.put('/contests/:id', (req, res) => {
-  const { title, time, prize_pool, entry_fee, spot_entry, spot_left } = req.body;
-  const sql = `UPDATE contest SET title=?, time=?, prize_pool=?, entry_fee=?, spot_entry=?, spot_left=? WHERE id=?`;
-  db.query(sql, [title, time, prize_pool, entry_fee, spot_entry, spot_left, req.params.id], (err) => {
+  const { title, time, prize_pool, entry_fee, spot_entry, spot_left, category } = req.body;
+  const sql = `UPDATE contest SET title=?, time=?, prize_pool=?, entry_fee=?, spot_entry=?, spot_left=?, category=? WHERE id=?`;
+  db.query(sql, [title, time, prize_pool, entry_fee, spot_entry, spot_left, category, req.params.id], (err) => {
     if (err) return res.status(500).send(err);
     res.send({ message: 'Contest updated successfully' });
   });
