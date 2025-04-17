@@ -244,6 +244,48 @@ app.delete('/contests/:id', (req, res) => {
   });
 });
 
+app.post('/joined_contests', (req, res) => {
+  const { contest_title, entry_fee, username, mobile, contest_time, joined_at } = req.body;
+  const sql = 'INSERT INTO joined_contests (contest_title, entry_fee, username, mobile, contest_time, joined_at) VALUES (?, ?, ?, ?, ?, ?)';
+  db.query(sql, [contest_title, entry_fee, username, mobile, contest_time, joined_at], (err, result) => {
+    if (err) return res.status(500).send(err);
+    res.send({ id: result.insertId, message: 'Contest joined successfully' });
+  });
+});
+
+// Read - Get all joined contests
+app.get('/joined_contests', (req, res) => {
+  db.query('SELECT * FROM joined_contests', (err, results) => {
+    if (err) return res.status(500).send(err);
+    res.send(results);
+  });
+});
+
+// Read - Get a specific contest entry
+app.get('/joined_contests/:id', (req, res) => {
+  db.query('SELECT * FROM joined_contests WHERE id = ?', [req.params.id], (err, result) => {
+    if (err) return res.status(500).send(err);
+    res.send(result[0]);
+  });
+});
+
+// Update - Update a contest entry
+app.put('/joined_contests/:id', (req, res) => {
+  const { contest_title, entry_fee, username, mobile, contest_time, joined_at } = req.body;
+  const sql = `UPDATE joined_contests SET contest_title=?, entry_fee=?, username=?, mobile=?, contest_time=?, joined_at=? WHERE id=?`;
+  db.query(sql, [contest_title, entry_fee, username, mobile, contest_time, joined_at, req.params.id], (err) => {
+    if (err) return res.status(500).send(err);
+    res.send({ message: 'Contest updated successfully' });
+  });
+});
+
+// Delete - Delete a contest entry
+app.delete('/joined_contests/:id', (req, res) => {
+  db.query('DELETE FROM joined_contests WHERE id = ?', [req.params.id], (err) => {
+    if (err) return res.status(500).send(err);
+    res.send({ message: 'Contest deleted successfully' });
+  });
+});
 
 const listenPort = process.env.X_ZOHO_CATALYST_LISTEN_PORT || port;
 app.listen(listenPort, () => {
