@@ -293,6 +293,54 @@ app.delete('/joined_contests/:id', (req, res) => {
   });
 });
 
+app.post('/', (req, res) => {
+  const { name, role, team, points, contest_title, contest_team } = req.body;
+  const sql = `INSERT INTO player (name, role, team, points, contest_title, contest_team) VALUES (?, ?, ?, ?, ?, ?)`;
+  db.query(sql, [name, role, team, points, contest_title, contest_team], (err, result) => {
+      if (err) return res.status(500).send(err);
+      res.status(201).send({ message: 'Player created', id: result.insertId });
+  });
+});
+
+// READ all players
+app.get('/', (req, res) => {
+  db.query('SELECT * FROM player', (err, results) => {
+      if (err) return res.status(500).send(err);
+      res.send(results);
+  });
+});
+
+// READ one player
+app.get('/:id', (req, res) => {
+  const sql = 'SELECT * FROM player WHERE id = ?';
+  db.query(sql, [req.params.id], (err, results) => {
+      if (err) return res.status(500).send(err);
+      if (results.length === 0) return res.status(404).send({ message: 'Player not found' });
+      res.send(results[0]);
+  });
+});
+
+// UPDATE a player
+app.put('/:id', (req, res) => {
+  const { name, role, team, points, contest_title, contest_team } = req.body;
+  const sql = `UPDATE player SET name = ?, role = ?, team = ?, points = ?, contest_title = ?, contest_team = ? WHERE id = ?`;
+  db.query(sql, [name, role, team, points, contest_title, contest_team, req.params.id], (err, result) => {
+      if (err) return res.status(500).send(err);
+      res.send({ message: 'Player updated' });
+  });
+});
+
+// DELETE a player
+app.delete('/:id', (req, res) => {
+  db.query('DELETE FROM player WHERE id = ?', [req.params.id], (err) => {
+      if (err) return res.status(500).send(err);
+      res.send({ message: 'Player deleted' });
+  });
+});
+
+
+
+
 const listenPort = process.env.X_ZOHO_CATALYST_LISTEN_PORT || port;
 app.listen(listenPort, () => {
   console.log(`🚀 Server running on http://localhost:${port}`);
