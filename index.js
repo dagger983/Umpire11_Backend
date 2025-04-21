@@ -340,43 +340,69 @@ app.delete('/players:id', (req, res) => {
 
 app.post('/user_selected_team', (req, res) => {
   const {
-    username, mobile,
-    player1_id, player2_id, player3_id, player4_id,
-    player5_id, player6_id, player7_id, player8_id,
-    player9_id, player10_id, player11_id,
-    captain_id, vice_captain_id
+    username,
+    mobile,
+    players,
+    captain,
+    viceCaptain,
+    totalPoints,
+    createdAt
   } = req.body;
 
-  const created_at = new Date();
+  // Ensure 11 players are selected
+  if (!players || players.length !== 11) {
+    return res.status(400).send({ message: 'Exactly 11 players required' });
+  }
+
+  const created_at = createdAt || new Date();
 
   const sql = `
     INSERT INTO user_selected_team (
-      username, mobile,
-      player1_id, player2_id, player3_id, player4_id,
-      player5_id, player6_id, player7_id, player8_id,
-      player9_id, player10_id, player11_id,
-      captain_id, vice_captain_id,
+      username, mobile, 
+      player1_id, player1_name,
+      player2_id, player2_name,
+      player3_id, player3_name,
+      player4_id, player4_name,
+      player5_id, player5_name,
+      player6_id, player6_name,
+      player7_id, player7_name,
+      player8_id, player8_name,
+      player9_id, player9_name,
+      player10_id, player10_name,
+      player11_id, player11_name,
+      captain_id, captain_name,
+      vice_captain_id, vice_captain_name,
+      total_points,
       created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
     username, mobile,
-    player1_id, player2_id, player3_id, player4_id,
-    player5_id, player6_id, player7_id, player8_id,
-    player9_id, player10_id, player11_id,
-    captain_id, vice_captain_id,
+    players[0].id, players[0].name,
+    players[1].id, players[1].name,
+    players[2].id, players[2].name,
+    players[3].id, players[3].name,
+    players[4].id, players[4].name,
+    players[5].id, players[5].name,
+    players[6].id, players[6].name,
+    players[7].id, players[7].name,
+    players[8].id, players[8].name,
+    players[9].id, players[9].name,
+    players[10].id, players[10].name,
+    captain.id, captain.name,
+    viceCaptain.id, viceCaptain.name,
+    totalPoints,
     created_at
   ];
 
   db.query(sql, values, (err, result) => {
     if (err) return res.status(500).send(err);
-    res.send({ message: 'Team created', id: result.insertId });
+    res.send({ message: 'Team saved', id: result.insertId });
   });
 });
 
 
-// Get all teams
 app.get('/user_selected_team', (req, res) => {
   db.query('SELECT * FROM user_selected_team', (err, results) => {
     if (err) return res.status(500).send(err);
@@ -384,7 +410,6 @@ app.get('/user_selected_team', (req, res) => {
   });
 });
 
-// Get a specific team by ID
 app.get('/user_selected_team/:id', (req, res) => {
   db.query('SELECT * FROM user_selected_team WHERE id = ?', [req.params.id], (err, result) => {
     if (err) return res.status(500).send(err);
@@ -393,7 +418,6 @@ app.get('/user_selected_team/:id', (req, res) => {
 });
 
 
-// Delete a team
 app.delete('/user_selected_team/:id', (req, res) => {
   db.query('DELETE FROM user_selected_team WHERE id = ?', [req.params.id], (err) => {
     if (err) return res.status(500).send(err);
