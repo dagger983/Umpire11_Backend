@@ -244,7 +244,7 @@ app.delete('/contests/:id', (req, res) => {
   });
 });
 
-router.post('/joined_contests', (req, res) => {
+app.post('/joined_contests', (req, res) => {
   const { contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at } = req.body;
 
   const query = `
