@@ -357,44 +357,44 @@ app.post('/user_selected_team', (req, res) => {
   const created_at = createdAt || new Date();
 
   const sql = `
-    INSERT INTO user_selected_team (
-      username, mobile, 
-      player1_id, player1_name,
-      player2_id, player2_name,
-      player3_id, player3_name,
-      player4_id, player4_name,
-      player5_id, player5_name,
-      player6_id, player6_name,
-      player7_id, player7_name,
-      player8_id, player8_name,
-      player9_id, player9_name,
-      player10_id, player10_name,
-      player11_id, player11_name,
-      captain_id, captain_name,
-      vice_captain_id, vice_captain_name,
-      total_points,
-      created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    username, mobile,
-    players[0].id, players[0].name,
-    players[1].id, players[1].name,
-    players[2].id, players[2].name,
-    players[3].id, players[3].name,
-    players[4].id, players[4].name,
-    players[5].id, players[5].name,
-    players[6].id, players[6].name,
-    players[7].id, players[7].name,
-    players[8].id, players[8].name,
-    players[9].id, players[9].name,
-    players[10].id, players[10].name,
-    captain.id, captain.name,
-    viceCaptain.id, viceCaptain.name,
-    totalPoints,
+  INSERT INTO user_selected_team (
+    username, mobile, 
+    player1_id, player1_name,
+    player2_id, player2_name,
+    player3_id, player3_name,
+    player4_id, player4_name,
+    player5_id, player5_name,
+    player6_id, player6_name,
+    player7_id, player7_name,
+    player8_id, player8_name,
+    player9_id, player9_name,
+    player10_id, player10_name,
+    player11_id, player11_name,
+    captain_id, captain_name,
+    vice_captain_id, vice_captain_name,
+    total_points,
     created_at
-  ];
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
+
+const values = [
+  username, mobile,
+  players[0].id, players[0].name,
+  players[1].id, players[1].name,
+  players[2].id, players[2].name,
+  players[3].id, players[3].name,
+  players[4].id, players[4].name,
+  players[5].id, players[5].name,
+  players[6].id, players[6].name,
+  players[7].id, players[7].name,
+  players[8].id, players[8].name,
+  players[9].id, players[9].name,
+  players[10].id, players[10].name,
+  captain.id, captain.name,
+  viceCaptain.id, viceCaptain.name,
+  totalPoints,
+  created_at
+];
 
   db.query(sql, values, (err, result) => {
     if (err) return res.status(500).send(err);
