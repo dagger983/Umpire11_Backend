@@ -244,22 +244,21 @@ app.delete('/contests/:id', (req, res) => {
   });
 });
 
-app.post('/joined_contests', (req, res) => {
+router.post('/joined_contests', (req, res) => {
   const { contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at } = req.body;
 
-  if (!contest_title || !entry_fee || !username || !mobile || !paymentId || !contest_time || !joined_at) {
-    return res.status(400).send({ message: 'All fields are required' });
-  }
+  const query = `
+    INSERT INTO joined_contests (contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
 
-  const sql = 'INSERT INTO joined_contests (contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at) VALUES (?, ?, ?, ?, ?, ?, ?)';
-  db.query(sql, [contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at], (err, result) => {
+  db.query(query, [contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at], (err, result) => {
     if (err) return res.status(500).send(err);
-    res.send({ id: result.insertId, message: 'Contest joined successfully' });
+    res.status(201).json({ message: 'Contest joined', id: result.insertId });
   });
 });
 
 
-// Update - Update a contest entry
 app.put('/joined_contests/:id', (req, res) => {
   const { contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at } = req.body;
   const sql = `
