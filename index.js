@@ -244,21 +244,17 @@ app.delete('/contests/:id', (req, res) => {
   });
 });
 
+// Create - Add new joined contest
 app.post('/joined_contests', (req, res) => {
-  const { contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at } = req.body;
-
-  const query = `
-    INSERT INTO joined_contests (contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  db.query(query, [contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at], (err, result) => {
+  const { contest_title, entry_fee, username, mobile, paymentId, contest_time  } = req.body;
+  const sql = 'INSERT INTO joined_contests (contest_title, entry_fee, username, mobile, paymentId, contest_time) VALUES (?, ?, ?, ?, ?, ?)';
+  db.query(sql, [contest_title, entry_fee, username, mobile, paymentId, contest_time], (err, result) => {
     if (err) return res.status(500).send(err);
-    res.status(201).json({ message: 'Contest joined', id: result.insertId });
+    res.send({ id: result.insertId, message: 'Contest joined successfully' });
   });
 });
 
-
+// Update - Update a contest entry
 app.put('/joined_contests/:id', (req, res) => {
   const { contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at } = req.body;
   const sql = `
