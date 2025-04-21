@@ -244,15 +244,20 @@ app.delete('/contests/:id', (req, res) => {
   });
 });
 
-// Create - Add new joined contest
 app.post('/joined_contests', (req, res) => {
   const { contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at } = req.body;
+
+  if (!contest_title || !entry_fee || !username || !mobile || !paymentId || !contest_time || !joined_at) {
+    return res.status(400).send({ message: 'All fields are required' });
+  }
+
   const sql = 'INSERT INTO joined_contests (contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at) VALUES (?, ?, ?, ?, ?, ?, ?)';
   db.query(sql, [contest_title, entry_fee, username, mobile, paymentId, contest_time, joined_at], (err, result) => {
     if (err) return res.status(500).send(err);
     res.send({ id: result.insertId, message: 'Contest joined successfully' });
   });
 });
+
 
 // Update - Update a contest entry
 app.put('/joined_contests/:id', (req, res) => {
@@ -303,7 +308,7 @@ app.post('/', (req, res) => {
 });
 
 // READ all players
-app.get('/', (req, res) => {
+app.get('/players', (req, res) => {
   db.query('SELECT * FROM player', (err, results) => {
       if (err) return res.status(500).send(err);
       res.send(results);
@@ -311,7 +316,7 @@ app.get('/', (req, res) => {
 });
 
 // READ one player
-app.get('/:id', (req, res) => {
+app.get('/players:id', (req, res) => {
   const sql = 'SELECT * FROM player WHERE id = ?';
   db.query(sql, [req.params.id], (err, results) => {
       if (err) return res.status(500).send(err);
@@ -321,7 +326,7 @@ app.get('/:id', (req, res) => {
 });
 
 // UPDATE a player
-app.put('/:id', (req, res) => {
+app.put('/players:id', (req, res) => {
   const { name, role, team, points, contest_title, contest_team } = req.body;
   const sql = `UPDATE player SET name = ?, role = ?, team = ?, points = ?, contest_title = ?, contest_team = ? WHERE id = ?`;
   db.query(sql, [name, role, team, points, contest_title, contest_team, req.params.id], (err, result) => {
@@ -331,7 +336,7 @@ app.put('/:id', (req, res) => {
 });
 
 // DELETE a player
-app.delete('/:id', (req, res) => {
+app.delete('/players:id', (req, res) => {
   db.query('DELETE FROM player WHERE id = ?', [req.params.id], (err) => {
       if (err) return res.status(500).send(err);
       res.send({ message: 'Player deleted' });
