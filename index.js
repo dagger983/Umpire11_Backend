@@ -338,28 +338,35 @@ app.delete('/players:id', (req, res) => {
   });
 });
 
-// Create a new selected team
 app.post('/user_selected_team', (req, res) => {
   const {
-    user_id, player1_id, player2_id, player3_id, player4_id,
+    username, mobile,
+    player1_id, player2_id, player3_id, player4_id,
     player5_id, player6_id, player7_id, player8_id,
-    player9_id, player10_id, player11_id
+    player9_id, player10_id, player11_id,
+    captain_id, vice_captain_id
   } = req.body;
 
   const created_at = new Date();
 
   const sql = `
     INSERT INTO user_selected_team (
-      user_id, player1_id, player2_id, player3_id, player4_id,
+      username, mobile,
+      player1_id, player2_id, player3_id, player4_id,
       player5_id, player6_id, player7_id, player8_id,
-      player9_id, player10_id, player11_id, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      player9_id, player10_id, player11_id,
+      captain_id, vice_captain_id,
+      created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
-    user_id, player1_id, player2_id, player3_id, player4_id,
+    username, mobile,
+    player1_id, player2_id, player3_id, player4_id,
     player5_id, player6_id, player7_id, player8_id,
-    player9_id, player10_id, player11_id, created_at
+    player9_id, player10_id, player11_id,
+    captain_id, vice_captain_id,
+    created_at
   ];
 
   db.query(sql, values, (err, result) => {
@@ -367,6 +374,7 @@ app.post('/user_selected_team', (req, res) => {
     res.send({ message: 'Team created', id: result.insertId });
   });
 });
+
 
 // Get all teams
 app.get('/user_selected_team', (req, res) => {
@@ -384,16 +392,6 @@ app.get('/user_selected_team/:id', (req, res) => {
   });
 });
 
-// Update a team
-app.put('/user_selected_team/:id', (req, res) => {
-  const updatedData = { ...req.body };
-  delete updatedData.created_at; // don't allow overwriting timestamp
-
-  db.query('UPDATE user_selected_team SET ? WHERE id = ?', [updatedData, req.params.id], (err) => {
-    if (err) return res.status(500).send(err);
-    res.send({ message: 'Team updated' });
-  });
-});
 
 // Delete a team
 app.delete('/user_selected_team/:id', (req, res) => {
