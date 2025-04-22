@@ -293,7 +293,7 @@ app.delete('/joined_contests/:id', (req, res) => {
   });
 });
 
-app.post('/', (req, res) => {
+app.post('/players', (req, res) => {
   const { name, role, team, points, contest_title, contest_team } = req.body;
   const sql = `INSERT INTO player (name, role, team, points, contest_title, contest_team) VALUES (?, ?, ?, ?, ?, ?)`;
   db.query(sql, [name, role, team, points, contest_title, contest_team], (err, result) => {
@@ -338,69 +338,100 @@ app.delete('/players:id', (req, res) => {
   });
 });
 
-app.post('/user_selected_team', (req, res) => {
-  const {
-    username,
-    mobile,
-    players,
-    captain,
-    viceCaptain,
-    totalPoints,
-    createdAt
-  } = req.body;
+const express = require('express');
+const bodyParser = require('body-parser');
+const mysql = require('mysql2');
 
-  // Ensure 11 players are selected
-  if (!players || players.length !== 11) {
-    return res.status(400).send({ message: 'Exactly 11 players required' });
-  }
+// Initialize app and middleware
+const app = express();
+app.use(bodyParser.json());
 
-  const created_at = createdAt || new Date();
-
-  const sql = `
-  INSERT INTO user_selected_team (
-    username, mobile, 
-    player1_id, player1_name,
-    player2_id, player2_name,
-    player3_id, player3_name,
-    player4_id, player4_name,
-    player5_id, player5_name,
-    player6_id, player6_name,
-    player7_id, player7_name,
-    player8_id, player8_name,
-    player9_id, player9_name,
-    player10_id, player10_name,
-    player11_id, player11_name,
-    captain_id, captain_name,
-    vice_captain_id, vice_captain_name,
-    total_points,
-    created_at
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-`;
-
-const values = [
-  username, mobile,
-  players[0].id, players[0].name,
-  players[1].id, players[1].name,
-  players[2].id, players[2].name,
-  players[3].id, players[3].name,
-  players[4].id, players[4].name,
-  players[5].id, players[5].name,
-  players[6].id, players[6].name,
-  players[7].id, players[7].name,
-  players[8].id, players[8].name,
-  players[9].id, players[9].name,
-  players[10].id, players[10].name,
-  captain.id, captain.name,
-  viceCaptain.id, viceCaptain.name,
-  totalPoints,
-  created_at
-];
-
-  db.query(sql, values, (err, result) => {
-    if (err) return res.status(500).send(err);
-    res.send({ message: 'Team saved', id: result.insertId });
-  });
+// Database connection setup
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: 'your_username',
+    password: 'your_password',
+    database: 'your_database',
 });
+
+// Connect to the database
+db.connect((err) => {
+    if (err) {
+        console.error('Database connection failed:', err.message);
+        process.exit(1);
+    }
+    console.log('Connected to the database.');
+});
+
+// POST /user_selected_team
+app.post('/user_selected_team', (req, res) => {
+    const data = req.body;
+
+    // Validate incoming data
+    if (!data.username || !data.mobile) {
+        return res.status(400).json({ message: 'Username and mobile are required.' });
+    }
+
+    // Prepare the SQL query
+    const sql = `
+        INSERT INTO user_selected_team 
+        (username, mobile, player1_id, player1_name, player2_id, player2_name, 
+        player3_id, player3_name, player4_id, player4_name, player5_id, player5_name, 
+        player6_id, player6_name, player7_id, player7_name, player8_id, player8_name, 
+        player9_id, player9_name, player10_id, player10_name, player11_id, player11_name, 
+        captain_id, captain_name, vice_captain_id, vice_captain_name, total_points, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW());
+    `;
+
+    const values = [
+        data.username,
+        data.mobile,
+        data.player1_id,
+        data.player1_name,
+        data.player2_id,
+        data.player2_name,
+        data.player3_id,
+        data.player3_name,
+        data.player4_id,
+        data.player4_name,
+        data.player5_id,
+        data.player5_name,
+        data.player6_id,
+        data.player6_name,
+        data.player7_id,
+        data.player7_name,
+        data.player8_id,
+        data.player8_name,
+        data.player9_id,
+        data.player9_name,
+        data.player10_id,
+        data.player10_name,
+        data.player11_id,
+        data.player11_name,
+        data.captain_id,
+        data.captain_name,
+        data.vice_captain_id,
+        data.vice_captain_name,
+        data.total_points || 0, // Default to 0 if not provided
+    ];
+
+    // Execute the query
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            console.error('Error inserting data:', err.message);
+            return res.status(500).json({ message: 'An error occurred.', error: err.message });
+        }
+
+        res.status(201).json({ message: 'Team created successfully!', teamId: result.insertId });
+    });
+});
+
+// Start the server
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
+});
+
+
 
 
 app.get('/user_selected_team', (req, res) => {
