@@ -12,10 +12,15 @@ const port = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(
   cors({
-    origin: "*", // Replace with frontend domain
+    origin: [
+      "http://localhost:3000", // React Native emulator (Metro)
+      "http://10.0.2.2:3000", // Android emulator
+      "http://192.168.1.xxx:3000", // Replace xxx with your local IP address
+      "https://umpire11app-50025754771.development.catalystappsail.in", // Production domain
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
+    credentials: true, // Use if you handle cookies/sessions
   })
 );
 
@@ -60,9 +65,6 @@ app.post("/create-order", async (req, res) => {
     res.status(500).json({ error: "Failed to create order" });
   }
 });
-
-
-
 
 
 
@@ -338,6 +340,9 @@ app.delete('/players:id', (req, res) => {
       res.send({ message: 'Player deleted' });
   });
 });
+
+
+
 
 app.post('/user_selected_team/players', (req, res) => {
     const data = req.body;
