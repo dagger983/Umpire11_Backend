@@ -399,28 +399,6 @@ const values = [
 
 
 
-app.get('/user_selected_team', (req, res) => {
-  db.query('SELECT * FROM user_selected_team', (err, results) => {
-    if (err) return res.status(500).send(err);
-    res.send(results);
-  });
-});
-
-app.get('/user_selected_team/:id', (req, res) => {
-  db.query('SELECT * FROM user_selected_team WHERE id = ?', [req.params.id], (err, result) => {
-    if (err) return res.status(500).send(err);
-    res.send(result[0]);
-  });
-});
-
-
-app.delete('/user_selected_team/:id', (req, res) => {
-  db.query('DELETE FROM user_selected_team WHERE id = ?', [req.params.id], (err) => {
-    if (err) return res.status(500).send(err);
-    res.send({ message: 'Team deleted' });
-  });
-});
-
 
 const listenPort = process.env.X_ZOHO_CATALYST_LISTEN_PORT || port;
 app.listen(listenPort, () => {
