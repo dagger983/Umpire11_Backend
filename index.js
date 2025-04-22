@@ -401,10 +401,6 @@ app.post('/user_selected_team', (req, res) => {
     });
 });
 
-// Start the server
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-});
 
 
 
