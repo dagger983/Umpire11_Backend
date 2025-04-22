@@ -338,32 +338,7 @@ app.delete('/players:id', (req, res) => {
   });
 });
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const mysql = require('mysql2');
 
-// Initialize app and middleware
-const app = express();
-app.use(bodyParser.json());
-
-// Database connection setup
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'your_username',
-    password: 'your_password',
-    database: 'your_database',
-});
-
-// Connect to the database
-db.connect((err) => {
-    if (err) {
-        console.error('Database connection failed:', err.message);
-        process.exit(1);
-    }
-    console.log('Connected to the database.');
-});
-
-// POST /user_selected_team
 app.post('/user_selected_team', (req, res) => {
     const data = req.body;
 
