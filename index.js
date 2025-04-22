@@ -13,9 +13,6 @@ app.use(bodyParser.json());
 app.use(
   cors({
     origin: [
-      "http://localhost:3000", // React Native emulator (Metro)
-      "http://10.0.2.2:3000", // Android emulator
-      "http://192.168.1.xxx:3000", // Replace xxx with your local IP address
       "https://umpire11app-50025754771.development.catalystappsail.in", // Production domain
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -400,6 +397,27 @@ const values = [
 
             res.status(201).json({ message: 'Team created successfully!', teamId: result.insertId });
         });
+});
+
+
+app.get('/user_selected_team/players', (req, res) => {
+  const sql = 'SELECT * FROM user_selected_team';
+
+  db.query(sql, (err, results) => {
+      if (err) {
+          console.error('Error retrieving data:', err.message);
+          return res.status(500).json({
+              message: 'An error occurred while fetching the teams.',
+              error: process.env.NODE_ENV === 'development' ? err.message : 'Internal Server Error'
+          });
+      }
+
+      if (results.length === 0) {
+          return res.status(404).json({ message: 'No teams found.' });
+      }
+
+      res.status(200).json({ message: 'Teams retrieved successfully!', teams: results });
+  });
 });
 
 
