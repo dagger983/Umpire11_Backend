@@ -26,7 +26,8 @@ const db = mysql.createConnection({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-});
+    });
+// Removed the unnecessary closing brace
 
 const query = util.promisify(db.query).bind(db);
 
@@ -338,7 +339,6 @@ app.delete('/players:id', (req, res) => {
   });
 });
 
-
 app.post('/user_selected_team/players', (req, res) => {
     const data = req.body;
     console.log('Received payload:', data);
@@ -393,11 +393,9 @@ const values = [
             return res.status(500).json({ message: 'An error occurred.', error: err.message });
         }
 
-        res.status(201).json({ message: 'Team created successfully!', teamId: result.insertId });
-    });
+            res.status(201).json({ message: 'Team created successfully!', teamId: result.insertId });
+        });
 });
-
-
 
 
 
