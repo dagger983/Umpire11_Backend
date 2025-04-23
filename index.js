@@ -425,83 +425,63 @@ app.delete("/players:id", (req, res) => {
   });
 });
 
+
 app.post("/user_selected_team/players", (req, res) => {
   const data = req.body;
   console.log("Received payload:", data);
+
+  // Validate required fields
   if (!data.username || !data.mobile) {
-    return res
-      .status(400)
-      .json({ message: "Username and mobile are required." });
+    return res.status(400).json({ message: "Username and mobile are required." });
   }
 
-  const sql = `INSERT INTO user_selected_team 
-    (username, mobile, player1_id, player1_name, player1_points, 
-    player2_id, player2_name, player2_points, 
-    player3_id, player3_name, player3_points, 
-    player4_id, player4_name, player4_points, 
-    player5_id, player5_name, player5_points, 
-    player6_id, player6_name, player6_points, 
-    player7_id, player7_name, player7_points, 
-    player8_id, player8_name, player8_points, 
-    player9_id, player9_name, player9_points, 
-    player10_id, player10_name, player10_points, 
-    player11_id, player11_name, player11_points, 
-    captain_id, captain_name, vice_captain_id, vice_captain_name, total_points) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
-
+  // Convert all points to numbers (with fallback to 0)
   const values = [
-    data.username,
+    data.username, 
     data.mobile,
-    data.player1_id,
-    data.player1_name,
-    data.player1_points,
-    data.player2_id,
-    data.player2_name,
-    data.player2_points,
-    data.player3_id,
-    data.player3_name,
-    data.player3_points,
-    data.player4_id,
-    data.player4_name,
-    data.player4_points,
-    data.player5_id,
-    data.player5_name,
-    data.player5_points,
-    data.player6_id,
-    data.player6_name,
-    data.player6_points,
-    data.player7_id,
-    data.player7_name,
-    data.player7_points,
-    data.player8_id,
-    data.player8_name,
-    data.player8_points,
-    data.player9_id,
-    data.player9_name,
-    data.player9_points,
-    data.player10_id,
-    data.player10_name,
-    data.player10_points,
-    data.player11_id,
-    data.player11_name,
-    data.player11_points,
-    data.captain_id,
-    data.captain_name,
-    data.vice_captain_id,
-    data.vice_captain_name,
-    data.total_points,
+    data.player1_id, data.player1_name,data.player1_points,
+    data.player2_id, data.player2_name, data.player2_points,
+    data.player3_id, data.player3_name, data.player3_points,
+    data.player4_id, data.player4_name, data.player4_points,
+    data.player5_id, data.player5_name, data.player5_points,
+    data.player6_id, data.player6_name, data.player6_points,
+    data.player7_id, data.player7_name, data.player7_points,
+    data.player8_id, data.player8_name, data.player8_points,
+    data.player9_id, data.player9_name, data.player9_points,
+    data.player10_id, data.player10_name, data.player10_points,
+    data.player11_id, data.player11_name, data.player11_points,
+    data.captain_id, data.captain_name, data.captain_points,
+    data.vice_captain_id, data.vice_captain_name, data.vice_captain_points,
+    data.total_points
   ];
+
+  const sql = `INSERT INTO user_selected_team 
+  (username, mobile, 
+   player1_id, player1_name, player1_points, 
+   player2_id, player2_name, player2_points, 
+   player3_id, player3_name, player3_points, 
+   player4_id, player4_name, player4_points, 
+   player5_id, player5_name, player5_points, 
+   player6_id, player6_name, player6_points, 
+   player7_id, player7_name, player7_points, 
+   player8_id, player8_name, player8_points, 
+   player9_id, player9_name, player9_points, 
+   player10_id, player10_name, player10_points, 
+   player11_id, player11_name, player11_points, 
+   captain_id, captain_name, captain_points, 
+   vice_captain_id, vice_captain_name, vice_captain_points, 
+   total_points) 
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
+
+
+  console.log("Final SQL:", mysql.format(sql, values)); // Debug
 
   db.query(sql, values, (err, result) => {
     if (err) {
-      console.error("Error inserting data:", err.message);
-      return res
-        .status(500)
-        .json({ message: "An error occurred.", error: err.message });
+      console.error("Database error:", err.message);
+      return res.status(500).json({ message: "Database error.", error: err.message });
     }
-    res
-      .status(201)
-      .json({ message: "Team created successfully!", teamId: result.insertId });
+    res.status(200).json({ message: "Team saved successfully!", teamId: result.insertId });
   });
 });
 
