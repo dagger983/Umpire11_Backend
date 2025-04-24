@@ -431,11 +431,10 @@ app.post("/user_selected_team/players", (req, res) => {
   console.log("Received payload:", data);
 
   // Validate required fields
-  if (!data.username || !data.mobile) {
-    return res.status(400).json({ message: "Username and mobile are required." });
+  if (!data.username || !data.mobile || !data.contest_title || !data.contest_entryfee) {
+    return res.status(400).json({ message: "Username, mobile, contest title, and entry fee are required." });
   }
 
-  // Prepare values without player points
   const values = [
     data.username,
     data.mobile,
@@ -451,7 +450,9 @@ app.post("/user_selected_team/players", (req, res) => {
     data.player10_id, data.player10_name,
     data.player11_id, data.player11_name,
     data.captain_id, data.captain_name,
-    data.vice_captain_id, data.vice_captain_name
+    data.vice_captain_id, data.vice_captain_name,
+    data.contest_title,
+    data.contest_entryfee
   ];
 
   const sql = `INSERT INTO user_selected_team 
@@ -468,8 +469,9 @@ app.post("/user_selected_team/players", (req, res) => {
    player10_id, player10_name, 
    player11_id, player11_name, 
    captain_id, captain_name, 
-   vice_captain_id, vice_captain_name) 
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
+   vice_captain_id, vice_captain_name, 
+   contest_title, contest_entryfee) 
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
 
   console.log("Final SQL:", mysql.format(sql, values)); // Debug
 
@@ -483,7 +485,7 @@ app.post("/user_selected_team/players", (req, res) => {
 });
 
 
-app.get("/user_selected_team/players", (req, res) => {
+app.get("/user-players", (req, res) => {
   const sql = "SELECT * FROM user_selected_team";
 
   db.query(sql, (err, results) => {
@@ -504,7 +506,7 @@ app.get("/user_selected_team/players", (req, res) => {
 
     res
       .status(200)
-      .json({ message: "Teams retrieved successfully!", teams: results });
+      .json(results);
   });
 });
 
