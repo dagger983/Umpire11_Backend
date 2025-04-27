@@ -438,42 +438,37 @@ app.post("/user_selected_team/players", (req, res) => {
   const values = [
     data.username,
     data.mobile,
-    data.player1_id, data.player1_name,
-    data.player2_id, data.player2_name,
-    data.player3_id, data.player3_name,
-    data.player4_id, data.player4_name,
-    data.player5_id, data.player5_name,
-    data.player6_id, data.player6_name,
-    data.player7_id, data.player7_name,
-    data.player8_id, data.player8_name,
-    data.player9_id, data.player9_name,
-    data.player10_id, data.player10_name,
-    data.player11_id, data.player11_name,
-    data.captain_id, data.captain_name,
-    data.vice_captain_id, data.vice_captain_name,
+    data.player1_name,
+    data.player2_name,
+    data.player3_name,
+    data.player4_name,
+    data.player5_name,
+    data.player6_name,
+    data.player7_name,
+    data.player8_name,
+    data.player9_name,
+    data.player10_name,
+    data.player11_name,
+    data.captain_id,
+    data.captain_name,
+    data.vice_captain_id,
+    data.vice_captain_name,
     data.contest_title,
-    data.contest_entryfee
+    data.contest_entryfee,
+    data.total_points // Ensure this value is included
   ];
 
   const sql = `INSERT INTO user_selected_team 
   (username, mobile, 
-   player1_id, player1_name, 
-   player2_id, player2_name, 
-   player3_id, player3_name, 
-   player4_id, player4_name, 
-   player5_id, player5_name, 
-   player6_id, player6_name, 
-   player7_id, player7_name, 
-   player8_id, player8_name, 
-   player9_id, player9_name, 
-   player10_id, player10_name, 
-   player11_id, player11_name, 
+   player1_name, player2_name, player3_name, player4_name, player5_name, 
+   player6_name, player7_name, player8_name, player9_name, player10_name, 
+   player11_name, 
    captain_id, captain_name, 
    vice_captain_id, vice_captain_name, 
-   contest_title, contest_entryfee) 
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
+   contest_title, contest_entryfee, total_points) 
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
 
-  console.log("Final SQL:", mysql.format(sql, values)); // Debug
+  console.log("Final SQL:", mysql.format(sql, values)); 
 
   db.query(sql, values, (err, result) => {
     if (err) {
@@ -483,6 +478,8 @@ app.post("/user_selected_team/players", (req, res) => {
     res.status(200).json({ message: "Team saved successfully!", teamId: result.insertId });
   });
 });
+
+
 
 
 app.get("/user-players", (req, res) => {
@@ -508,6 +505,102 @@ app.get("/user-players", (req, res) => {
       .status(200)
       .json(results);
   });
+});
+
+app.get('/api/bots', (req, res) => {
+  const query = 'SELECT * FROM bots';
+  db.query(query, (err, results) => {
+      if (err) {
+          console.error('Error fetching data:', err.message);
+          res.status(500).json({ error: 'Failed to fetch data from bots table' });
+          return;
+      }
+      res.json(results); // Return the fetched data as JSON
+  });
+});
+
+app.post("/results", (req, res) => {
+  const data = req.body;
+  const query = `
+    INSERT INTO result (
+      ${Object.keys(data).join(", ")}
+    ) VALUES (
+      ${Object.values(data).map(() => "?").join(", ")}
+    )
+  `;
+
+  db.query(query, Object.values(data), (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+      return;
+    }
+    res.status(201).send({ message: "Result created successfully", id: result.insertId });
+  });
+});
+
+// Read all results
+app.get("/results", (req, res) => {
+  const query = "SELECT * FROM result";
+  db.query(query, (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+      return;
+    }
+    res.status(200).send(results);
+  });
+});
+
+// Read a single result by ID
+app.get("/results/:id", (req, res) => {
+  const { id } = req.params;
+  const query = "SELECT * FROM result WHERE id = ?";
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+      return;
+    }
+    if (result.length === 0) {
+      res.status(404).send({ message: "Result not found" });
+      return;
+    }
+    res.status(200).send(result[0]);
+  });
+});
+
+// Update a result by ID
+app.put("/results/:id", (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+  const query = `
+    UPDATE result
+    SET ${Object.keys(data).map((key) => `${key} = ?`).join(", ")}
+    WHERE id = ?
+  `;
+
+  db.query(query, [...Object.values(data), id], (err) => {
+    if (err) {
+      res.status(500).send(err);
+      return;
+    }
+    res.status(200).send({ message: "Result updated successfully" });
+  });
+});
+
+// Delete a result by ID
+app.delete("/results/:id", (req, res) => {
+  const { id } = req.params;
+  const query = "DELETE FROM result WHERE id = ?";
+  db.query(query, [id], (err) => {
+    if (err) {
+      res.status(500).send(err);
+      return;
+    }
+    res.status(200).send({ message: "Result deleted successfully" });
+  });
+});
+
+app.get("/", (req, res) => {
+  res.send("API Works Perferctly 👌🏻😁 ");
 });
 
 const listenPort = process.env.X_ZOHO_CATALYST_LISTEN_PORT || port;
